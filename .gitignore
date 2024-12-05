@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment variables
+.env
+*.env
+
+
+# Python virtual environment
+*.egg-info/
+cagtu-venv/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+
+# System-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+
+# Redis
+dump.rdb
+appendonly.aof
+
+# Swagger
+api/schema.yaml
+api/schema.json
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# Testing
+test.db
+pytest_cache/
+.tox/
+.nox/
+
+# Extras
+api-test.http
+models.dot

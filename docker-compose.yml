@@ -1,0 +1,15 @@
+
+version: '3.9'
+
+services:
+  redis:
+    image: redis:latest  # Use the latest Redis image
+    container_name: redis-container
+    ports:
+      - "6380:6379"  # Map host port 6380 to container port 6379 (default Redis port)
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - redis_data:/data  # Persist Redis data across container restarts
+
+volumes:
+  redis_data:  # Named volume for Redis persistence

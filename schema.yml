@@ -1,0 +1,1755 @@
+openapi: 3.0.3
+info:
+  title: Financial System API
+  version: 1.0.0
+  description: It is finance management system with jwt authentication, services like
+    Income, Expense, and Loan Management along with Reis Cache and Logging Implemented.
+paths:
+  /accounts/login/:
+    post:
+      operationId: accounts_login_create
+      description: Handles User Login and return JWT tokens.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogin'
+          description: ''
+  /accounts/logout/:
+    post:
+      operationId: accounts_logout_create
+      description: Handles User Logout and blacklist the tokens.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogout'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogout'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogout'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogout'
+          description: ''
+  /accounts/profile/:
+    get:
+      operationId: accounts_profile_retrieve
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: accounts_profile_update
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: accounts_profile_partial_update
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /accounts/signup/:
+    post:
+      operationId: accounts_signup_create
+      description: Handles the User Registration.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignup'
+          description: ''
+  /accounts/token/refresh/:
+    post:
+      operationId: accounts_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /finance/expense/:
+    get:
+      operationId: finance_expense_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExpenseList'
+          description: ''
+    post:
+      operationId: finance_expense_create
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Expense'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+  /finance/expense/{id}/:
+    get:
+      operationId: finance_expense_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    put:
+      operationId: finance_expense_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Expense'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    patch:
+      operationId: finance_expense_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    delete:
+      operationId: finance_expense_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /finance/expense/cached/:
+    get:
+      operationId: finance_expense_cached_retrieve
+      description: Handle GET request to return a cached list of expense
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+  /finance/income/:
+    get:
+      operationId: finance_income_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIncomeList'
+          description: ''
+    post:
+      operationId: finance_income_create
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Income'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Income'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Income'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+  /finance/income/{id}/:
+    get:
+      operationId: finance_income_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+    put:
+      operationId: finance_income_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Income'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Income'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Income'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+    patch:
+      operationId: finance_income_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedIncome'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedIncome'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedIncome'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+    delete:
+      operationId: finance_income_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /finance/income/cached/:
+    get:
+      operationId: finance_income_cached_retrieve
+      description: Handle GET requests to return a cached list of incomes.
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+  /finance/loan/:
+    get:
+      operationId: finance_loan_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLoanList'
+          description: ''
+    post:
+      operationId: finance_loan_create
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Loan'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Loan'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Loan'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+          description: ''
+  /finance/loan/{id}/:
+    get:
+      operationId: finance_loan_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+          description: ''
+    put:
+      operationId: finance_loan_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Loan'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Loan'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Loan'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+          description: ''
+    patch:
+      operationId: finance_loan_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLoan'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLoan'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLoan'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+          description: ''
+    delete:
+      operationId: finance_loan_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /finance/loan/cached/:
+    get:
+      operationId: finance_loan_cached_retrieve
+      description: Handle GET request to return a cached list of loan
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+          description: ''
+  /finance/reports/:
+    get:
+      operationId: finance_reports_retrieve
+      description: A view to generate financial reports dynamically using GenericAPIView.
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+          description: ''
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    CountryEnum:
+      enum:
+      - AF
+      - AX
+      - AL
+      - DZ
+      - AS
+      - AD
+      - AO
+      - AI
+      - AQ
+      - AG
+      - AR
+      - AM
+      - AW
+      - AU
+      - AT
+      - AZ
+      - BS
+      - BH
+      - BD
+      - BB
+      - BY
+      - BE
+      - BZ
+      - BJ
+      - BM
+      - BT
+      - BO
+      - BQ
+      - BA
+      - BW
+      - BV
+      - BR
+      - IO
+      - BN
+      - BG
+      - BF
+      - BI
+      - CV
+      - KH
+      - CM
+      - CA
+      - KY
+      - CF
+      - TD
+      - CL
+      - CN
+      - CX
+      - CC
+      - CO
+      - KM
+      - CG
+      - CD
+      - CK
+      - CR
+      - CI
+      - HR
+      - CU
+      - CW
+      - CY
+      - CZ
+      - DK
+      - DJ
+      - DM
+      - DO
+      - EC
+      - EG
+      - SV
+      - GQ
+      - ER
+      - EE
+      - SZ
+      - ET
+      - FK
+      - FO
+      - FJ
+      - FI
+      - FR
+      - GF
+      - PF
+      - TF
+      - GA
+      - GM
+      - GE
+      - DE
+      - GH
+      - GI
+      - GR
+      - GL
+      - GD
+      - GP
+      - GU
+      - GT
+      - GG
+      - GN
+      - GW
+      - GY
+      - HT
+      - HM
+      - VA
+      - HN
+      - HK
+      - HU
+      - IS
+      - IN
+      - ID
+      - IR
+      - IQ
+      - IE
+      - IM
+      - IL
+      - IT
+      - JM
+      - JP
+      - JE
+      - JO
+      - KZ
+      - KE
+      - KI
+      - KW
+      - KG
+      - LA
+      - LV
+      - LB
+      - LS
+      - LR
+      - LY
+      - LI
+      - LT
+      - LU
+      - MO
+      - MG
+      - MW
+      - MY
+      - MV
+      - ML
+      - MT
+      - MH
+      - MQ
+      - MR
+      - MU
+      - YT
+      - MX
+      - FM
+      - MD
+      - MC
+      - MN
+      - ME
+      - MS
+      - MA
+      - MZ
+      - MM
+      - NA
+      - NR
+      - NP
+      - NL
+      - NC
+      - NZ
+      - NI
+      - NE
+      - NG
+      - NU
+      - NF
+      - KP
+      - MK
+      - MP
+      - 'NO'
+      - OM
+      - PK
+      - PW
+      - PS
+      - PA
+      - PG
+      - PY
+      - PE
+      - PH
+      - PN
+      - PL
+      - PT
+      - PR
+      - QA
+      - RE
+      - RO
+      - RU
+      - RW
+      - BL
+      - SH
+      - KN
+      - LC
+      - MF
+      - PM
+      - VC
+      - WS
+      - SM
+      - ST
+      - SA
+      - SN
+      - RS
+      - SC
+      - SL
+      - SG
+      - SX
+      - SK
+      - SI
+      - SB
+      - SO
+      - ZA
+      - GS
+      - KR
+      - SS
+      - ES
+      - LK
+      - SD
+      - SR
+      - SJ
+      - SE
+      - CH
+      - SY
+      - TW
+      - TJ
+      - TZ
+      - TH
+      - TL
+      - TG
+      - TK
+      - TO
+      - TT
+      - TN
+      - TR
+      - TM
+      - TC
+      - TV
+      - UG
+      - UA
+      - AE
+      - GB
+      - UM
+      - US
+      - UY
+      - UZ
+      - VU
+      - VE
+      - VN
+      - VG
+      - VI
+      - WF
+      - EH
+      - YE
+      - ZM
+      - ZW
+      type: string
+      description: |-
+        * `AF` - Afghanistan
+        * `AX` - Åland Islands
+        * `AL` - Albania
+        * `DZ` - Algeria
+        * `AS` - American Samoa
+        * `AD` - Andorra
+        * `AO` - Angola
+        * `AI` - Anguilla
+        * `AQ` - Antarctica
+        * `AG` - Antigua and Barbuda
+        * `AR` - Argentina
+        * `AM` - Armenia
+        * `AW` - Aruba
+        * `AU` - Australia
+        * `AT` - Austria
+        * `AZ` - Azerbaijan
+        * `BS` - Bahamas
+        * `BH` - Bahrain
+        * `BD` - Bangladesh
+        * `BB` - Barbados
+        * `BY` - Belarus
+        * `BE` - Belgium
+        * `BZ` - Belize
+        * `BJ` - Benin
+        * `BM` - Bermuda
+        * `BT` - Bhutan
+        * `BO` - Bolivia
+        * `BQ` - Bonaire, Sint Eustatius and Saba
+        * `BA` - Bosnia and Herzegovina
+        * `BW` - Botswana
+        * `BV` - Bouvet Island
+        * `BR` - Brazil
+        * `IO` - British Indian Ocean Territory
+        * `BN` - Brunei
+        * `BG` - Bulgaria
+        * `BF` - Burkina Faso
+        * `BI` - Burundi
+        * `CV` - Cabo Verde
+        * `KH` - Cambodia
+        * `CM` - Cameroon
+        * `CA` - Canada
+        * `KY` - Cayman Islands
+        * `CF` - Central African Republic
+        * `TD` - Chad
+        * `CL` - Chile
+        * `CN` - China
+        * `CX` - Christmas Island
+        * `CC` - Cocos (Keeling) Islands
+        * `CO` - Colombia
+        * `KM` - Comoros
+        * `CG` - Congo
+        * `CD` - Congo (the Democratic Republic of the)
+        * `CK` - Cook Islands
+        * `CR` - Costa Rica
+        * `CI` - Côte d'Ivoire
+        * `HR` - Croatia
+        * `CU` - Cuba
+        * `CW` - Curaçao
+        * `CY` - Cyprus
+        * `CZ` - Czechia
+        * `DK` - Denmark
+        * `DJ` - Djibouti
+        * `DM` - Dominica
+        * `DO` - Dominican Republic
+        * `EC` - Ecuador
+        * `EG` - Egypt
+        * `SV` - El Salvador
+        * `GQ` - Equatorial Guinea
+        * `ER` - Eritrea
+        * `EE` - Estonia
+        * `SZ` - Eswatini
+        * `ET` - Ethiopia
+        * `FK` - Falkland Islands (Malvinas)
+        * `FO` - Faroe Islands
+        * `FJ` - Fiji
+        * `FI` - Finland
+        * `FR` - France
+        * `GF` - French Guiana
+        * `PF` - French Polynesia
+        * `TF` - French Southern Territories
+        * `GA` - Gabon
+        * `GM` - Gambia
+        * `GE` - Georgia
+        * `DE` - Germany
+        * `GH` - Ghana
+        * `GI` - Gibraltar
+        * `GR` - Greece
+        * `GL` - Greenland
+        * `GD` - Grenada
+        * `GP` - Guadeloupe
+        * `GU` - Guam
+        * `GT` - Guatemala
+        * `GG` - Guernsey
+        * `GN` - Guinea
+        * `GW` - Guinea-Bissau
+        * `GY` - Guyana
+        * `HT` - Haiti
+        * `HM` - Heard Island and McDonald Islands
+        * `VA` - Holy See
+        * `HN` - Honduras
+        * `HK` - Hong Kong
+        * `HU` - Hungary
+        * `IS` - Iceland
+        * `IN` - India
+        * `ID` - Indonesia
+        * `IR` - Iran
+        * `IQ` - Iraq
+        * `IE` - Ireland
+        * `IM` - Isle of Man
+        * `IL` - Israel
+        * `IT` - Italy
+        * `JM` - Jamaica
+        * `JP` - Japan
+        * `JE` - Jersey
+        * `JO` - Jordan
+        * `KZ` - Kazakhstan
+        * `KE` - Kenya
+        * `KI` - Kiribati
+        * `KW` - Kuwait
+        * `KG` - Kyrgyzstan
+        * `LA` - Laos
+        * `LV` - Latvia
+        * `LB` - Lebanon
+        * `LS` - Lesotho
+        * `LR` - Liberia
+        * `LY` - Libya
+        * `LI` - Liechtenstein
+        * `LT` - Lithuania
+        * `LU` - Luxembourg
+        * `MO` - Macao
+        * `MG` - Madagascar
+        * `MW` - Malawi
+        * `MY` - Malaysia
+        * `MV` - Maldives
+        * `ML` - Mali
+        * `MT` - Malta
+        * `MH` - Marshall Islands
+        * `MQ` - Martinique
+        * `MR` - Mauritania
+        * `MU` - Mauritius
+        * `YT` - Mayotte
+        * `MX` - Mexico
+        * `FM` - Micronesia
+        * `MD` - Moldova
+        * `MC` - Monaco
+        * `MN` - Mongolia
+        * `ME` - Montenegro
+        * `MS` - Montserrat
+        * `MA` - Morocco
+        * `MZ` - Mozambique
+        * `MM` - Myanmar
+        * `NA` - Namibia
+        * `NR` - Nauru
+        * `NP` - Nepal
+        * `NL` - Netherlands
+        * `NC` - New Caledonia
+        * `NZ` - New Zealand
+        * `NI` - Nicaragua
+        * `NE` - Niger
+        * `NG` - Nigeria
+        * `NU` - Niue
+        * `NF` - Norfolk Island
+        * `KP` - North Korea
+        * `MK` - North Macedonia
+        * `MP` - Northern Mariana Islands
+        * `NO` - Norway
+        * `OM` - Oman
+        * `PK` - Pakistan
+        * `PW` - Palau
+        * `PS` - Palestine, State of
+        * `PA` - Panama
+        * `PG` - Papua New Guinea
+        * `PY` - Paraguay
+        * `PE` - Peru
+        * `PH` - Philippines
+        * `PN` - Pitcairn
+        * `PL` - Poland
+        * `PT` - Portugal
+        * `PR` - Puerto Rico
+        * `QA` - Qatar
+        * `RE` - Réunion
+        * `RO` - Romania
+        * `RU` - Russia
+        * `RW` - Rwanda
+        * `BL` - Saint Barthélemy
+        * `SH` - Saint Helena, Ascension and Tristan da Cunha
+        * `KN` - Saint Kitts and Nevis
+        * `LC` - Saint Lucia
+        * `MF` - Saint Martin (French part)
+        * `PM` - Saint Pierre and Miquelon
+        * `VC` - Saint Vincent and the Grenadines
+        * `WS` - Samoa
+        * `SM` - San Marino
+        * `ST` - Sao Tome and Principe
+        * `SA` - Saudi Arabia
+        * `SN` - Senegal
+        * `RS` - Serbia
+        * `SC` - Seychelles
+        * `SL` - Sierra Leone
+        * `SG` - Singapore
+        * `SX` - Sint Maarten (Dutch part)
+        * `SK` - Slovakia
+        * `SI` - Slovenia
+        * `SB` - Solomon Islands
+        * `SO` - Somalia
+        * `ZA` - South Africa
+        * `GS` - South Georgia and the South Sandwich Islands
+        * `KR` - South Korea
+        * `SS` - South Sudan
+        * `ES` - Spain
+        * `LK` - Sri Lanka
+        * `SD` - Sudan
+        * `SR` - Suriname
+        * `SJ` - Svalbard and Jan Mayen
+        * `SE` - Sweden
+        * `CH` - Switzerland
+        * `SY` - Syria
+        * `TW` - Taiwan
+        * `TJ` - Tajikistan
+        * `TZ` - Tanzania
+        * `TH` - Thailand
+        * `TL` - Timor-Leste
+        * `TG` - Togo
+        * `TK` - Tokelau
+        * `TO` - Tonga
+        * `TT` - Trinidad and Tobago
+        * `TN` - Tunisia
+        * `TR` - Türkiye
+        * `TM` - Turkmenistan
+        * `TC` - Turks and Caicos Islands
+        * `TV` - Tuvalu
+        * `UG` - Uganda
+        * `UA` - Ukraine
+        * `AE` - United Arab Emirates
+        * `GB` - United Kingdom
+        * `UM` - United States Minor Outlying Islands
+        * `US` - United States of America
+        * `UY` - Uruguay
+        * `UZ` - Uzbekistan
+        * `VU` - Vanuatu
+        * `VE` - Venezuela
+        * `VN` - Vietnam
+        * `VG` - Virgin Islands (British)
+        * `VI` - Virgin Islands (U.S.)
+        * `WF` - Wallis and Futuna
+        * `EH` - Western Sahara
+        * `YE` - Yemen
+        * `ZM` - Zambia
+        * `ZW` - Zimbabwe
+    Expense:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        category:
+          type: string
+          maxLength: 120
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        due_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/ExpenseStatusEnum'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - category
+      - created_at
+      - due_date
+      - id
+      - updated_at
+      - user
+    ExpenseStatusEnum:
+      enum:
+      - pending
+      - paid
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `paid` - Paid
+    Income:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        source_name:
+          type: string
+          maxLength: 255
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        date_received:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/IncomeStatusEnum'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - date_received
+      - id
+      - source_name
+      - updated_at
+      - user
+    IncomeStatusEnum:
+      enum:
+      - pending
+      - received
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `received` - Received
+    Loan:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        loan_name:
+          type: string
+          maxLength: 120
+        principal_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          description: The Principal Amount of Loan.
+        interest_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: The annual interest rate for the loan (percentage).
+        tenure_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: The loan tenure in months.
+        monthly_installment:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: The Dynamically calculated monthly installment for Loan
+        remaining_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/LoanStatusEnum'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - interest_rate
+      - loan_name
+      - monthly_installment
+      - principal_amount
+      - remaining_balance
+      - tenure_months
+      - updated_at
+      - user
+    LoanStatusEnum:
+      enum:
+      - active
+      - paid
+      type: string
+      description: |-
+        * `active` - Active
+        * `paid` - Paid
+    NullEnum:
+      enum:
+      - null
+    PaginatedExpenseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+    PaginatedIncomeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Income'
+    PaginatedLoanList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Loan'
+    PatchedExpense:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        category:
+          type: string
+          maxLength: 120
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        due_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/ExpenseStatusEnum'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedIncome:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        source_name:
+          type: string
+          maxLength: 255
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        date_received:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/IncomeStatusEnum'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedLoan:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        loan_name:
+          type: string
+          maxLength: 120
+        principal_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          description: The Principal Amount of Loan.
+        interest_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: The annual interest rate for the loan (percentage).
+        tenure_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: The loan tenure in months.
+        monthly_installment:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: The Dynamically calculated monthly installment for Loan
+        remaining_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/LoanStatusEnum'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedUserProfile:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        phone_number:
+          type: string
+          nullable: true
+          description: Enter a valid phone number
+          pattern: ^\+?1?\d{9,15}$
+          maxLength: 15
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        citizenship_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        country:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        province:
+          type: string
+          nullable: true
+          maxLength: 100
+        city:
+          type: string
+          nullable: true
+          maxLength: 100
+        zip_code:
+          type: string
+          nullable: true
+          maxLength: 20
+    Report:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    UserLogout:
+      type: object
+      properties:
+        refresh:
+          type: string
+      required:
+      - refresh
+    UserProfile:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        phone_number:
+          type: string
+          nullable: true
+          description: Enter a valid phone number
+          pattern: ^\+?1?\d{9,15}$
+          maxLength: 15
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        citizenship_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        country:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        province:
+          type: string
+          nullable: true
+          maxLength: 100
+        city:
+          type: string
+          nullable: true
+          maxLength: 100
+        zip_code:
+          type: string
+          nullable: true
+          maxLength: 20
+      required:
+      - email
+      - username
+    UserSignup:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password1:
+          type: string
+          writeOnly: true
+        password2:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password1
+      - password2
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
